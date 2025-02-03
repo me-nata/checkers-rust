@@ -18,7 +18,7 @@ impl MovementStatus {
         let max = Position(8, 8);
 
         match (from, to) {
-            (from, to) if from.is_entry(min, max) && to.is_entry(min, max) => Err(MovementStatus::OutOfBoard),
+            (from, to) if !(from.is_entry(min, max) && to.is_entry(min, max)) => Err(MovementStatus::OutOfBoard),
             (from, _) if !board.has_piece(from) => Err(MovementStatus::NoPieceInThisPosition),
             (_, to) if board.has_piece(to) => Err(MovementStatus::PositionAlreadyOccupied),
             _ => Ok(()),
