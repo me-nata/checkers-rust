@@ -26,35 +26,34 @@ impl MovementStatus {
     }
 
     fn verify_diagonal_queen_move(
-        board: &Board, 
-        from: Position, 
-        to: Position, 
-        from_team: Team, 
-        delta_x: isize, 
-        delta_y: isize
-    ) -> Result<(MovementStatus, Option<Position>), MovementStatus>{
-        let mut i = from.0;
-        let mut j = from.1;
+        board: &Board,
+        from: Position,
+        to: Position,
+        from_team: Team,
+        delta_x: isize,
+        delta_y: isize,
+    ) -> Result<(MovementStatus, Option<Position>), MovementStatus> {
+        let mut current = from;
         let mut found_piece: Option<Position> = None;
 
-        while i != to.0 || j != to.1{
-            i = if i != to.0 {(i as isize + delta_x) as usize} else {i};
-            j = if j != to.1 {(j as isize + delta_y) as usize} else {j};
+        while current != to {
+            current.0 = (current.0 as isize + delta_x) as usize;
+            current.1 = (current.1 as isize + delta_y) as usize;
 
-            if board.has_piece(Position(i, j)) {
-                let is_same_team = board.team_from(Position(i, j)).unwrap() == from_team;
+            if board.has_piece(current) {
+                let is_same_team = board.team_from(current).unwrap() == from_team;
 
                 if found_piece.is_some() || is_same_team {
                     return Err(MovementStatus::MovementNotAccept);
                 }
 
-                found_piece = Some(Position(i, j));
+                found_piece = Some(current);
             }
         }
 
-        match found_piece.is_some() {
-            true => Ok((MovementStatus::Capture, found_piece)),
-            false => Ok((MovementStatus::Simple, None))
+        match found_piece {
+            Some(piece) => Ok((MovementStatus::Capture, Some(piece))),
+            None => Ok((MovementStatus::Simple, None)),
         }
     }
 
