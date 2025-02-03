@@ -17,22 +17,12 @@ impl MovementStatus {
         let min = Position(0, 0);
         let max = Position(8, 8);
 
-        // is in the board
-        if !from.is_entry(min, max) || !to.is_entry(min, max) {
-            return Err(MovementStatus::OutOfBoard);
+        match (from, to) {
+            (from, to) if from.is_entry(min, max) && to.is_entry(min, max) => Err(MovementStatus::OutOfBoard),
+            (from, _) if !board.has_piece(from) => Err(MovementStatus::NoPieceInThisPosition),
+            (_, to) if board.has_piece(to) => Err(MovementStatus::PositionAlreadyOccupied),
+            _ => Ok(()),
         }
-        
-        // position from exists
-        if !board.has_piece(from) {
-            return Err(MovementStatus::NoPieceInThisPosition);
-        }
-        
-        // position to is not occupied
-        if board.has_piece(to) {
-            return Err(MovementStatus::PositionAlreadyOccupied);
-        }
-
-        Ok(())
     }
 
     fn verify_diagonal_queen_move(
