@@ -69,26 +69,24 @@ impl MovementStatus {
     }
 
     fn verify_normal_move(
-        board: &Board, 
-        from: Position, 
-        from_team: Team, 
-        delta_x: isize, 
-        delta_y: isize
-    ) -> Result<(MovementStatus, Option<Position>), MovementStatus>{
-        let (i, j) = (
-            (from.0 + delta_x as usize),
-            (from.1 + delta_y as usize)
+        board: &Board,
+        from: Position,
+        from_team: Team,
+        delta: (isize, isize),
+    ) -> Result<(MovementStatus, Option<Position>), MovementStatus> {
+        let to = Position(
+            (from.0 as isize + delta.0) as usize,
+            (from.1 as isize + delta.1) as usize,
         );
 
-        let other_pos = Position(i, j);
-        if !board.has_piece(other_pos) {
+        if !board.has_piece(to) {
             return Err(MovementStatus::NoPieceToCapture);
         }
 
-        match board.team_from(other_pos).unwrap() {
-            from_team => Ok((MovementStatus::Simple, None)),
-            _ => Ok((MovementStatus::Capture, Some(other_pos)))
-        }        
+        match board.team_from(to).unwrap() {
+            team if team == from_team => Ok((MovementStatus::Simple, None)),
+            _ => Ok((MovementStatus::Capture, Some(to))),
+        }
     }
 
     fn verify_move_rules(board: &Board, from: Position, to: Position)
