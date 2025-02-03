@@ -1,5 +1,5 @@
 use crate::{
-    moviment::MovimentStatus,
+    movement::MovementStatus,
     common::Position,
     player::*,
     board::Board
@@ -23,16 +23,15 @@ impl Game {
         self.board.initialize();
     }
 
-    pub fn move_piece(&mut self, from: Position, to: Position) -> MovimentStatus {
-        let (moviment_status, position) = match 
-        MovimentStatus::verify_move_piece(&self.board, from, to) {
-            Ok((moviment, position)) => (moviment, position),
-            Err(moviment) => return moviment
+    pub fn move_piece(&mut self, from: Position, to: Position) -> MovementStatus {
+        let (movement_status, position) = match  MovementStatus::verify_move_piece(&self.board, from, to) {
+            Ok((movement, position)) => (movement, position),
+            Err(movement) => return movement
         };
 
-        match moviment_status {
-            MovimentStatus::Simple => self.board.move_piece(from, to),
-            MovimentStatus::Capture => {
+        match movement_status {
+            MovementStatus::Simple => self.board.move_piece(from, to),
+            MovementStatus::Capture => {
                 self.board.remove_piece(position.unwrap());
                 self.board.move_piece(from, to);
             }
@@ -40,13 +39,13 @@ impl Game {
         }
 
         self.become_queen(to);
-        moviment_status
+        movement_status
     }
 
     pub fn display(&self) {
         println!();
         for row in (0..8).rev() {
-            print!("{} ", row); // Coordenadas das linhas
+            print!("{} ", row);
             for col in 0..8 {
                 let pos = Position(row, col);
                 match self.board.team_from(pos) {

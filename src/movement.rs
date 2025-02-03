@@ -1,7 +1,7 @@
 use crate::{board::Board, common::Position, player::Team};
 
 #[derive(Debug)]
-pub enum MovimentStatus {
+pub enum MovementStatus {
     Not,
     Simple,
     Capture,
@@ -9,27 +9,27 @@ pub enum MovimentStatus {
     NoPieceToCapture,
     PositionAlreadyOccupied,
     OutOfBoard,
-    MovimentNotAccept
+    MovementNotAccept
 }
-impl MovimentStatus {
-    pub fn verify_phisical_limits(board: &Board, from: Position, to: Position)
-    -> Result<(), MovimentStatus> {
+impl MovementStatus {
+    pub fn verify_physical_limits(board: &Board, from: Position, to: Position)
+    -> Result<(), MovementStatus> {
         let min = Position(0, 0);
         let max = Position(8, 8);
 
         // is in the board
         if !from.is_entry(min, max) || !to.is_entry(min, max) {
-            return Err(MovimentStatus::OutOfBoard);
+            return Err(MovementStatus::OutOfBoard);
         }
         
         // position from exists
         if !board.has_piece(from) {
-            return Err(MovimentStatus::NoPieceInThisPosition);
+            return Err(MovementStatus::NoPieceInThisPosition);
         }
         
         // position to is not occupied
         if board.has_piece(to) {
-            return Err(MovimentStatus::PositionAlreadyOccupied);
+            return Err(MovementStatus::PositionAlreadyOccupied);
         }
 
         Ok(())
@@ -42,7 +42,7 @@ impl MovimentStatus {
         from_team: Team, 
         delta_x: isize, 
         delta_y: isize
-    ) -> Result<(MovimentStatus, Option<Position>), MovimentStatus>{
+    ) -> Result<(MovementStatus, Option<Position>), MovementStatus>{
         let mut i = from.0;
         let mut j = from.1;
         let mut found_piece: Option<Position> = None;
@@ -55,7 +55,7 @@ impl MovimentStatus {
                 let is_same_team = board.team_from(Position(i, j)).unwrap() == from_team;
 
                 if found_piece.is_some() || is_same_team {
-                    return Err(MovimentStatus::MovimentNotAccept);
+                    return Err(MovementStatus::MovementNotAccept);
                 }
 
                 found_piece = Some(Position(i, j));
@@ -63,8 +63,8 @@ impl MovimentStatus {
         }
 
         match found_piece.is_some() {
-            true => Ok((MovimentStatus::Capture, found_piece)),
-            false => Ok((MovimentStatus::Simple, None))
+            true => Ok((MovementStatus::Capture, found_piece)),
+            false => Ok((MovementStatus::Simple, None))
         }
     }
 
@@ -74,38 +74,38 @@ impl MovimentStatus {
         from_team: Team, 
         delta_x: isize, 
         delta_y: isize
-    ) -> Result<(MovimentStatus, Option<Position>), MovimentStatus>{
+    ) -> Result<(MovementStatus, Option<Position>), MovementStatus>{
         let (i, j) = (
             (from.0 + delta_x as usize),
             (from.1 + delta_y as usize)
         );
 
-        let outher_pos = Position(i, j);
-        if !board.has_piece(outher_pos) {
-            return Err(MovimentStatus::NoPieceToCapture);
+        let other_pos = Position(i, j);
+        if !board.has_piece(other_pos) {
+            return Err(MovementStatus::NoPieceToCapture);
         }
 
-        match board.team_from(outher_pos).unwrap() {
-            from_team => Ok((MovimentStatus::Simple, None)),
-            _ => Ok((MovimentStatus::Capture, Some(outher_pos)))
+        match board.team_from(other_pos).unwrap() {
+            from_team => Ok((MovementStatus::Simple, None)),
+            _ => Ok((MovementStatus::Capture, Some(other_pos)))
         }        
     }
 
     fn verify_move_rules(board: &Board, from: Position, to: Position)
-    -> Result<(MovimentStatus, Option<Position>), MovimentStatus> {
+    -> Result<(MovementStatus, Option<Position>), MovementStatus> {
 
         let (dx, dy) = Position::diff(from, to);
         let (abs_dx, abs_dy) = (dx.abs(), dy.abs());
 
         // simple move
         if abs_dx == 1 && abs_dy == 0 {
-            return Ok((MovimentStatus::Simple, None));
+            return Ok((MovementStatus::Simple, None));
         }
 
         // no horizontal move or back move (for not queen)
         let is_queen = board.is_queen_in(from).unwrap();
         if (abs_dx != abs_dy) || (is_queen && abs_dy > 0) {
-            return Err(MovimentStatus::MovimentNotAccept);
+            return Err(MovementStatus::MovementNotAccept);
         }
 
         let from_team = board.team_from(from).unwrap();
@@ -116,20 +116,20 @@ impl MovimentStatus {
         );
 
         if is_queen {
-            MovimentStatus::verify_diagonal_queen_move(&board, from, to, from_team, delta_x, delta_y)
+            MovementStatus::verify_diagonal_queen_move(&board, from, to, from_team, delta_x, delta_y)
         } else {
-            MovimentStatus::verify_normal_move(&board, from, from_team, delta_x, delta_y)
+            MovementStatus::verify_normal_move(&board, from, from_team, delta_x, delta_y)
         }
     }
 
     pub fn verify_move_piece(board: &Board, from: Position, to: Position) 
-    -> Result<(MovimentStatus, Option<Position>), MovimentStatus> {
+    -> Result<(MovementStatus, Option<Position>), MovementStatus> {
         if from == to {
-            return Ok((MovimentStatus::Not, None));
+            return Ok((MovementStatus::Not, None));
         }
 
-        match MovimentStatus::verify_phisical_limits(board, from, to) {
-            Ok(_) => MovimentStatus::verify_move_rules(board, from, to),
+        match MovementStatus::verify_physical_limits(board, from, to) {
+            Ok(_) => MovementStatus::verify_move_rules(board, from, to),
             Err(err) => Err(err)
         }
     }

@@ -1,15 +1,15 @@
 use common::Position;
 use game::Game;
-use moviment::MovimentStatus;
+use movement::MovementStatus;
 
 mod common;
 mod player;
 mod game;
 mod board;
-mod moviment;
+mod movement;
 
 
-fn display(game: &Game, status: Option<MovimentStatus>) {
+fn display(game: &Game, status: Option<MovementStatus>) {
     println!("Status: {:?}", status);
     game.display();
 }
@@ -18,7 +18,7 @@ fn main() {
     let mut game = Game::new();
     game.initialize();
 
-    let mut status: Option<MovimentStatus> = None;
+    let mut status: Option<MovementStatus> = None;
     display(&game, status);
     
     let (p1, p2) = (Position(2, 0), Position(3, 0));
