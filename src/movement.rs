@@ -116,7 +116,7 @@ impl MovementStatus {
         if is_queen {
             MovementStatus::verify_diagonal_queen_move(&board, from, to, from_team, delta_x, delta_y)
         } else {
-            MovementStatus::verify_normal_move(&board, from, from_team, delta_x, delta_y)
+            MovementStatus::verify_normal_move(&board, from, from_team, (delta_x, delta_y))
         }
     }
 
