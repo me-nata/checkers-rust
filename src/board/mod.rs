@@ -1,8 +1,6 @@
 mod piece;
 pub use piece::Piece;
 use crate::{common::Position, player::Team};
-use crate::movement::MovementStatus;
-
 
 pub struct Board([[Option<Piece>; 8]; 8]);
 impl Board {

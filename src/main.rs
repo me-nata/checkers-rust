@@ -1,12 +1,13 @@
 use common::Position;
 use game::Game;
-use movement::MovementStatus;
 
 mod common;
 mod player;
 mod game;
 mod board;
 mod movement;
+
+use movement::MovementStatus;
 
 
 fn display(game: &Game, status: Option<MovementStatus>) {
