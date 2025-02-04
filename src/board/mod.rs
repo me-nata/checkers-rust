@@ -69,4 +69,22 @@ impl Board {
             self.0[pos.0][pos.1].unwrap().set_queen();
         }
     }
+
+    pub fn display(&self) {
+        println!();
+        for row in (0..8).rev() {
+            print!("{} ", row);
+            for col in 0..8 {
+                let pos = Position(row, col);
+                match self.team_from(pos) {
+                    Some(Team::White) => print!(" ⚪ "),
+                    Some(Team::Black) => print!(" ⚫ "),
+                    _ => print!(" .  ")
+                }
+            }
+            println!();
+        }
+        println!("   0   1   2   3   4   5   6   7");
+        println!();
+    }
 }
