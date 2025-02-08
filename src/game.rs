@@ -5,6 +5,7 @@ use crate::{
 pub struct Game {
     p1: Player,
     p2: Player,
+    p1_turn: bool,
     board: Board,
 }
 impl Game {
@@ -12,8 +13,13 @@ impl Game {
         Game {
             p1: Player::new(Team::Black),
             p2: Player::new(Team::White),
+            p1_turn: true,
             board: Board::new(),
         }
+    }
+
+    fn switch_turn(&mut self) {
+        self.p1_turn = !self.p1_turn;
     }
 
     pub fn initialize(&mut self) {
@@ -22,6 +28,7 @@ impl Game {
 
     pub fn move_piece(&mut self, action: MovementAction) {
         action.move_piece(&mut self.board);
+        self.switch_turn();
     }
 
     pub fn display(&self) {
