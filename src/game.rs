@@ -26,8 +26,11 @@ impl Game {
         self.board.initialize();
     }
 
-    pub fn move_piece(&mut self, action: MovementAction) {
-        action.move_piece(&mut self.board);
+    pub fn move_piece(&mut self, player: &Player, action: MovementAction) {
+        if Team::is_the_same(player, &self.p1) || !self.p1_turn{
+            action.move_piece(&mut self.board);
+        }
+
         self.switch_turn();
     }
 
